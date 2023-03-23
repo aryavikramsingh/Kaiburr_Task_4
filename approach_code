@@ -1,0 +1,100 @@
+//Create a new React application using create-react-app.
+
+npx create-react-app server-app
+cd server-app
+
+//Install the axios package for making HTTP requests to our REST API.
+
+npm install axios
+
+//FINAL CODE
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+function App() {
+  const [servers, setServers] = useState([]);
+  const [newServer, setNewServer] = useState({});
+
+  useEffect(() => {
+    fetchServers();
+  }, []);
+
+  const fetchServers = async () => {
+    const response = await axios.get('/servers');
+    setServers(response.data);
+  };
+
+  const createServer = async () => {
+    await axios.post('/servers', newServer);
+    setNewServer({});
+    fetchServers();
+  };
+
+  const deleteServer = async (id) => {
+    await axios.delete(`/servers/${id}`);
+    fetchServers();
+  };
+
+  return (
+    <div>
+      <h1>Server App</h1>
+
+      <form onSubmit={(event) => {
+        event.preventDefault();
+        createServer();
+      }}>
+        <input type="text" placeholder="Name" value={newServer.name || ''}
+          onChange={(event) => setNewServer({ ...newServer, name: event.target.value })} />
+        <input type="text" placeholder="ID" value={newServer.id || ''}
+          onChange={(event) => setNewServer({ ...newServer, id: event.target.value })} />
+        <input type="text" placeholder="Language" value={newServer.language || ''}
+          onChange={(event) => setNewServer({ ...newServer, language: event.target.value })} />
+        <input type="text" placeholder="Framework" value={newServer.framework || ''}
+          onChange={(event) => setNewServer({ ...newServer, framework: event.target.value })} />
+        <button type="submit">Create</button>
+      </form>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Language</th>
+            <th>Framework</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {servers.map((server) => (
+            <tr key={server.id}>
+              <td>{server.id}</td>
+              <td>{server.name}</td>
+              <td>{server.language}</td>
+              <td>{server.framework}</td>
+              <td><button onClick={() => deleteServer(server.id)}>Delete</button></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default App;
+
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import App from './App';
+
+ReactDOM.render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <Switch>
+        <Route path="/" component={App} />
+      </Switch>
+    </BrowserRouter>
+  </React.Strict
+
